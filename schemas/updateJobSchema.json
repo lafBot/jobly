@@ -15,9 +15,7 @@
     ],
     "required": [
         "title",
-        "salary",
-        "equity",
-        "company_handle"
+        "salary"
     ],
     "properties": {
         "title": {
@@ -47,7 +45,8 @@
             "description": "A percentage of equity given in a job position posting.",
             "default": 0.0,
             "examples": [
-                1.0
+                1.0,
+                0.2
             ]
         },
         "company_handle": {
