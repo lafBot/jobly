@@ -15,18 +15,14 @@
         }
     ],
     "required": [
-        "handle",
-        "name",
-        "num_employees",
-        "description",
-        "logo_url"
+        "handle"
     ],
     "properties": {
         "handle": {
             "$id": "#/properties/handle",
             "type": "string",
             "title": "The handle schema",
-            "description": "An explanation about the purpose of this instance.",
+            "description": "The shortened alpha-numeric representation of the company; such as their stock symbol.",
             "default": "",
             "examples": [
                 "Merp"
@@ -36,7 +32,7 @@
             "$id": "#/properties/name",
             "type": "string",
             "title": "The name schema",
-            "description": "An explanation about the purpose of this instance.",
+            "description": "The name of the company.",
             "default": "",
             "examples": [
                 "Derp"
@@ -46,7 +42,7 @@
             "$id": "#/properties/num_employees",
             "type": "integer",
             "title": "The num_employees schema",
-            "description": "An explanation about the purpose of this instance.",
+            "description": "The number of employees working at the specified company.",
             "default": 0,
             "examples": [
                 10000
@@ -56,7 +52,7 @@
             "$id": "#/properties/description",
             "type": "string",
             "title": "The description schema",
-            "description": "An explanation about the purpose of this instance.",
+            "description": "A description of the goods/services the company provides.",
             "default": "",
             "examples": [
                 "A derpy developer"
@@ -66,7 +62,7 @@
             "$id": "#/properties/logo_url",
             "type": "string",
             "title": "The logo_url schema",
-            "description": "An explanation about the purpose of this instance.",
+            "description": "The logo url for the company.",
             "default": "",
             "examples": [
                 "https://apple-logo.jpg"

@@ -1,0 +1,63 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "The root schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": {},
+    "examples": [
+        {
+            "title": "Salesman",
+            "salary": 200000,
+            "equity": 1.0,
+            "company_handle": "SNA"
+        }
+    ],
+    "required": [
+        "title",
+        "salary"
+    ],
+    "properties": {
+        "title": {
+            "$id": "#/properties/title",
+            "type": "string",
+            "title": "The title schema",
+            "description": "A title for the job posting.",
+            "default": "",
+            "examples": [
+                "Salesman"
+            ]
+        },
+        "salary": {
+            "$id": "#/properties/salary",
+            "type": "number",
+            "title": "The salary schema",
+            "description": "The floating numeric value of the starting salary",
+            "default": 0,
+            "examples": [
+                200000.00
+            ]
+        },
+        "equity": {
+            "$id": "#/properties/equity",
+            "type": "number",
+            "title": "The equity schema",
+            "description": "A percentage of equity given in a job position posting.",
+            "default": 0.0,
+            "examples": [
+                1.0
+            ]
+        },
+        "company_handle": {
+            "$id": "#/properties/company_handle",
+            "type": "string",
+            "title": "The company_handle schema",
+            "description": "The handle representing the company",
+            "default": "",
+            "examples": [
+                "SNA"
+            ]
+        }
+    },
+    "additionalProperties": true
+}

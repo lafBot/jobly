@@ -8,6 +8,7 @@ const morgan = require("morgan");
 
 const app = express();
 const companies = require('./routes/companies');
+const jobs = require('./routes/jobs');
 
 app.use(express.json());
 
@@ -16,6 +17,7 @@ app.use(morgan("tiny"));
 
 // routes to direct to
 app.use('/companies', companies)
+app.use('/jobs', jobs)
 
 
 /** 404 handler */

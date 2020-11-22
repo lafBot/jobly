@@ -6,7 +6,7 @@ const router = express.Router();
 const Company = require('../models/company_queries');
 const { validate } = require('jsonschema');
 const updateCompanySchema = require('../schemas/updateCompanySchema')
-const newCompanySchema = require('../schemas/newCompanySchema')
+const newCompanySchema = require('../schemas/newCompanySchema');
 
 // get all companies with possible parameters
 router.get('/', async (req, res, next) => {

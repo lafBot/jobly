@@ -1,9 +1,7 @@
 process.env.NODE_ENV = "TEST";
-// const { test } = require("media-typer");
 const request = require("supertest");
 const app = require("../../app");
 const db = require("../../db");
-// companies = require('../../routes/companies');
 
 let company1;
 let company2;

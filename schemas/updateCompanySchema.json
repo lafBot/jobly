@@ -15,23 +15,12 @@
         }
     ],
     "required": [
-        "handle",
         "name",
         "num_employees",
         "description",
         "logo_url"
     ],
     "properties": {
-        "handle": {
-            "$id": "#/properties/handle",
-            "type": "string",
-            "title": "The handle schema",
-            "description": "An explanation about the purpose of this instance.",
-            "default": "",
-            "examples": [
-                "APP"
-            ]
-        },
         "name": {
             "$id": "#/properties/name",
             "type": "string",

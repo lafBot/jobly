@@ -63,17 +63,25 @@ class Company {
     };
 
     static async getCompany(handle) {
-        const resp = await db.query(`
+        const comp = await db.query(`
         SELECT handle, name, num_employees, description, logo_url
         FROM companies
         WHERE handle=$1`,
         [handle]);
 
-        if (!resp.rows[0]) {
+        if (!comp.rows[0]) {
             throw new ExpressError(`Invalid company handle`, 404);
         }
 
-        return resp.rows[0];
+        const jobs = await db.query(`
+        SELECT id, title, salary, equity
+        FROM jobs
+        WHERE company_handle=$1`,
+        [handle]);
+
+        let company = comp.rows[0];
+        company.jobs = jobs.rows;
+        return { company };
     };
 
     static async editCompany(handle, data) {
@@ -92,7 +100,7 @@ class Company {
         )
 
         const resp = await db.query(query, values);
-        return resp.rows[0]
+        return resp.rows[0];
     }
 
     static async deleteCompany(handle) {
