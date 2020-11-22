@@ -39,14 +39,9 @@ describe('GET /companies', () => {
         const resp = await request(app).get('/companies');
 
         expect(resp.statusCode).toBe(200);
-        expect(resp.body).toEqual(
-            { "companies": 
-                [{ "handle": company1.handle,
-                    "name": company1.name },
-                { "handle": company2.handle,
-                "name": company2.name }]
-            }   
-        );
+        expect(resp.body.companies.length).toBe(2);
+        expect(resp.body.companies[0]).toHaveProperty("handle");
+        expect(resp.body.companies[0]).toHaveProperty("name");
     });
 
     test('should return a filtered list of handles and names', async () => {
@@ -82,15 +77,12 @@ describe('GET /companies', () => {
         const resp = await request(app).get(`/companies/${company1.handle}`);
 
         expect(resp.statusCode).toBe(200);
-        expect(resp.body).toEqual(
-            { "company": 
-            { "handle": company1.handle,
-                "name": company1.name,
-                "description": company1.description,
-                "logo_url": company1.logo_url,
-                "num_employees": company1.num_employees
-            }}
-        );
+        expect(resp.body.company).toHaveProperty("handle");
+        expect(resp.body.company).toHaveProperty("name");
+        expect(resp.body.company).toHaveProperty("description");
+        expect(resp.body.company).toHaveProperty("logo_url");
+        expect(resp.body.company).toHaveProperty("num_employees");
+        expect(resp.body.company).toHaveProperty("jobs");
     });
 
 });
@@ -112,7 +104,7 @@ describe('POST /companies', () => {
 
     test('Invalid attempt to create company', async () => {
         const resp = await request(app).post('/companies').send({
-            "handle": "Merpy"
+            "num_employees": "Merpy"
         });
 
         expect(resp.statusCode).toBe(400);

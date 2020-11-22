@@ -20,10 +20,6 @@ class Job {
         let whereExpressions = [];
         let queryValues = [];
 
-        if (+params.min_salary >= +params.max_salary) {
-            throw new ExpressError(`Invalid min/max salary parameter request`, 400);
-        }
-
         if (params.search) {
             queryValues.push(`%${params.search}%`);
             whereExpressions.push(`title ILIKE $${queryValues.length}`);
@@ -34,12 +30,12 @@ class Job {
             whereExpressions.push(`salary >= $${queryValues.length}`);
         }
 
-        if (params.max_salary) {
-            queryValues.push(+params.max_salary);
-            whereExpressions.push(`salary <= $${queryValues.length}`);
+        if (params.min_equity) {
+            queryValues.push(+params.min_equity);
+            whereExpressions.push(`equity >= $${queryValues.length}`);
         }
 
-        let query = `SELECT title, company_handle, salary FROM jobs`
+        let query = `SELECT title, company_handle, equity, salary FROM jobs`
         if (whereExpressions.length > 0) {
             query += " WHERE ";
             query += whereExpressions.join(" AND ");
