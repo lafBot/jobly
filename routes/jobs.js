@@ -3,12 +3,17 @@ const Job = require('../models/job_queries')
 const ExpressError = require('../helpers/ExpressError');
 const router = express.Router();
 const { validate } = require('jsonschema');
-const { newJobSchema, updateJobSchema } = require('../schemas');
-
+const newJobSchema = require('../schemas/newJobSchema');
+const updateJobSchema = require('../schemas/updateJobSchema')
 
 
 router.post('/', async (req, res, next) => {
     try {
+        const validation = validate(req.body, newJobSchema);
+        if (!validation.valid) {
+            throw new ExpressError(validation.errors.map(e => e.stack), 400);
+        }
+
         const job = await Job.createJob(req.body);
         return res.status(201).json({ job });
     } catch (err) {
