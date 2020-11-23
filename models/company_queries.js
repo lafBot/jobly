@@ -112,8 +112,8 @@ class Company {
 
         if (resp.rows.length === 0) {
             throw new ExpressError(`The company handle '${handle}' does not exist`, 404);
-          }
         }
+    }
 }
 
 module.exports = Company;
