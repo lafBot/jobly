@@ -42,7 +42,7 @@ beforeEach(async () => {
 
 describe('GET /jobs', () => {
     test('Get all jobs', async () => {
-        const resp = await request(app).get(`/jobs`)
+        const resp = await request(app).get(`/jobs`);
 
         expect(resp.statusCode).toBe(200);
         expect(resp.body.jobs[0]).toHaveProperty("title");
@@ -51,7 +51,7 @@ describe('GET /jobs', () => {
     });
 
     test('Get jobs with minimum salary of 90K', async () => {
-        const resp = await request(app).get(`/jobs?min_salary=90000`)
+        const resp = await request(app).get(`/jobs?min_salary=90000`);
 
         expect(resp.statusCode).toBe(200);
         expect(resp.body.jobs[0]).toHaveProperty("title");
@@ -59,7 +59,7 @@ describe('GET /jobs', () => {
     });
 
     test('Get jobs with minimum equity position of 0.05', async () => {
-        const resp = await request(app).get(`/jobs?min_equity=0.03`)
+        const resp = await request(app).get(`/jobs?min_equity=0.03`);
 
         expect(resp.statusCode).toBe(200);
         expect(resp.body.jobs[0]).toHaveProperty("title");
@@ -67,7 +67,7 @@ describe('GET /jobs', () => {
     });
 
     test('Get jobs with title "Salesman"', async () => {
-        const resp = await request(app).get(`/jobs?search=Salesman`)
+        const resp = await request(app).get(`/jobs?search=Salesman`);
 
         expect(resp.statusCode).toBe(200);
         expect(resp.body.jobs.length).toBe(1);

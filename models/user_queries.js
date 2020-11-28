@@ -2,12 +2,46 @@ const db = require('../db');
 const ExpressError = require('../helpers/ExpressError');
 const sqlForPartialUpdate = require('../helpers/partialUpdate');
 const bcrypt = require("bcrypt");
+const { SECRET_KEY } = require('../config');
 const BCRYPT_WORK_FACTOR = 10;
 
 
 
 class User {
+    static async checkAuth(data) {
+
+        const resp = await db.query(`
+        SELECT username, password, first_name, last_name, email, photo_url, is_admin
+        FROM users
+        WHERE username = $1`,
+        [data.username]);
+
+        const user = resp.rows[0];
+
+        if (user) {
+            const validity = await bcrypt.compare(data.password, user.password);
+            if (validity) {
+                return user;
+            }
+        } else {
+            throw new ExpressError('Invalid username/password combination.', 401);
+        }
+    }
+
     static async createUser(data) {
+        const availableUsername = await db.query(
+            `SELECT username 
+              FROM users 
+              WHERE username = $1`,
+            [data.username]
+        );
+      
+        if (availableUsername.rows[0]) {
+            throw new ExpressError(`The username '${data.username} has already been taken.  Please try a new one.`, 400);
+        };
+
+        const password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
+
         const resp = await db.query(`
         INSERT INTO users
         (username, password, first_name, last_name, email, photo_url, is_admin)
@@ -15,7 +49,7 @@ class User {
         ($1, $2, $3, $4, $5, $6, $7)
         RETURNING
         username, password, first_name, last_name, email, photo_url, is_admin`,
-        [data.username, data.password, data.first_name, data.last_name, data.email, data.photo_url, data.is_admin]);
+        [data.username, password, data.first_name, data.last_name, data.email, data.photo_url, data.is_admin]);
         return resp.rows[0];
     }
 
@@ -26,14 +60,24 @@ class User {
         return users.rows;
     }
 
+
+    static async findUser(username) {
+        const user = await db.query(`
+        SELECT username, first_name, last_name, email, photo_url
+        FROM users
+        WHERE username=$1`,
+        [username]);
+
+        if (user.rows.length == 0) {
+            throw new ExpressError("Invalid username.", 404);
+        }
+        return user.rows[0];
+    }
+
     static async editUser(username, data) {
         if (data.password) {
             data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
         }
-
-        const checkValid = await db.query(`
-        SELECT * FROM users WHERE username=$1`,
-        [username]);
 
         let { query, values } = sqlForPartialUpdate(
             "users",

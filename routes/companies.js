@@ -7,6 +7,7 @@ const Company = require('../models/company_queries');
 const { validate } = require('jsonschema');
 const updateCompanySchema = require('../schemas/updateCompanySchema')
 const newCompanySchema = require('../schemas/newCompanySchema');
+const { checkAuth } = require('../models/user_queries');
 
 // get all companies with possible parameters
 router.get('/', async (req, res, next) => {
@@ -36,7 +37,7 @@ router.post('/', async (req, res, next) => {
 
 
 // find individual company by handle
-router.get('/:handle', async (req, res, next) => {
+router.get('/:handle', checkAuth, async (req, res, next) => {
     try {
         const company = await Company.getCompany(req.params.handle);
         return res.json(company);
@@ -45,7 +46,7 @@ router.get('/:handle', async (req, res, next) => {
     }
 })
 
-router.patch('/:handle', async (req, res, next) => {
+router.patch('/:handle', checkAuth, async (req, res, next) => {
     try {
         const validation = validate(req.body, updateCompanySchema);
 

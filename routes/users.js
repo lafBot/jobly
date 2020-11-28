@@ -5,10 +5,11 @@ const router = express.Router();
 const { validate } = require('jsonschema');
 const newUserSchema = require('../schemas/newUserSchema');
 const updateUserSchema = require('../schemas/updateUserSchema');
+const checkAdmin = require('../middleware/auth');
+const createToken = require('../helpers/createToken');
 
 
-
-router.post('/', async (req, res, next) => {
+router.post('/', checkAdmin, async (req, res, next) => {
     try {
         const validation = validate(req.body, newUserSchema);
         if (!validation.valid) {
@@ -16,7 +17,8 @@ router.post('/', async (req, res, next) => {
         }
 
         const user = await User.createUser(req.body);
-        return res.status(201).json({ user });
+        const token = await createToken(user);
+        return res.status(201).json({ token });
     } catch (err) {
         return next(err);
     }
@@ -33,8 +35,8 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:username', async (req, res, next) => {
     try {
-        const users = await User.getUsers(req.params.username);
-        return res.json({ users });
+        const user = await User.findUser(req.params.username);
+        return res.json({ user });
     } catch (err) {
         return next(err);
     }

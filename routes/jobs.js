@@ -2,6 +2,7 @@ const express = require('express');
 const Job = require('../models/job_queries')
 const ExpressError = require('../helpers/ExpressError');
 const router = express.Router();
+const checkAuth = require('../middleware/auth');
 const { validate } = require('jsonschema');
 const newJobSchema = require('../schemas/newJobSchema');
 const updateJobSchema = require('../schemas/updateJobSchema')
@@ -21,7 +22,7 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-router.get('/', async (req, res, next) => {
+router.get('/', checkAuth, async (req, res, next) => {
     try {
         const jobs = await Job.getJobs(req.query);
         return res.json({ jobs });
@@ -30,7 +31,7 @@ router.get('/', async (req, res, next) => {
     }
 })
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', checkAuth, async (req, res, next) => {
     try {
         const job = await Job.findJob(+req.params.id);
         return res.json({ job });
