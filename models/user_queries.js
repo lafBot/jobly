@@ -3,7 +3,7 @@ const ExpressError = require('../helpers/ExpressError');
 const sqlForPartialUpdate = require('../helpers/partialUpdate');
 const bcrypt = require("bcrypt");
 const { SECRET_KEY } = require('../config');
-const BCRYPT_WORK_FACTOR = 10;
+const { BCRYPT_WORK_FACTOR } = require('../config');
 
 
 

@@ -2,21 +2,36 @@ process.env.NODE_ENV = "TEST";
 const request = require("supertest");
 const app = require("../../app");
 const db = require("../../db");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const { BCRYPT_WORK_FACTOR } = require('../../config');
 
 
 let user1;
 
 beforeEach(async () => {
+    const password = await bcrypt.hash('Password1', BCRYPT_WORK_FACTOR);
+
     let user = await db.query(`
     INSERT INTO users
     (username, password, first_name, last_name, email, photo_url, is_admin)
     VALUES
-    ('testUser', 'Password1', 'Bob', 'Ross', 'BobRossArt@gmail.com', 'bob_art_url.com', True)
+    ('testUser', $1, 'Bob', 'Ross', 'BobRossArt@gmail.com', 'bob_art_url.com', True)
     RETURNING
     username, password, first_name, last_name, email, photo_url, is_admin
-    `)
+    `, [password]);
 
+    const login = await request(app)
+        .post('/login')
+        .send({
+            username: "testUser",
+            password: "Password1"
+        });
+    
     user1 = user.rows[0];
+
+    user1.userToken = login.body.token;
+    user1.currentUsername = jwt.decode(user1.userToken).username;
 });
 
 describe('GET /users', () => {
@@ -46,9 +61,10 @@ describe('GET /users', () => {
 
 describe('PATCH /users', () => {
     test('Allows for edit to user info', async () => {
-        const resp = await request(app).patch(`/users/${user1.username}`).send({
+        const resp = await request(app).patch(`/users/${user1.currentUsername}`).send({
             "username": "BobbyRoss",
-            "first_name": "Bobby"
+            "first_name": "Bobby",
+            "_token": `${user1.userToken}`
         });
         expect(resp.statusCode).toBe(200);
         expect(resp.body.user.username).toBe("BobbyRoss");
@@ -58,16 +74,18 @@ describe('PATCH /users', () => {
     test('Throws error for invalid edit to username info', async () => {
         const resp = await request(app).patch(`/users/invalid`).send({
             "username": "BobbyRoss",
-            "first_name": "Bobby"
+            "first_name": "Bobby",
+            "_token": `${user1.userToken}`
         });
 
-        expect(resp.statusCode).toBe(404);
+        expect(resp.statusCode).toBe(401);
     });
 
     test('Throws error for invalid edit to user info', async () => {
-        const resp = await request(app).patch(`/users/${user1.username}`).send({
+        const resp = await request(app).patch(`/users/${user1.currentUsername}`).send({
             "username": 12345,
-            "first_name": "Bobby"
+            "first_name": "Bobby",
+            "_token": `${user1.userToken}`
         });
 
         expect(resp.statusCode).toBe(400);
@@ -75,23 +93,21 @@ describe('PATCH /users', () => {
 
     describe('DELETE /user', () => {
         test('Deletes a specified user', async () => {
-            const resp = await request(app).delete(`/users/${user1.username}`);
+            const resp = await request(app).delete(`/users/${user1.currentUsername}`).send({ _token: `${user1.userToken}` });
     
             expect(resp.statusCode).toBe(200);
             expect(resp.body.message).toBe("User deleted");
         });
     
-        test('Returns error for invalid job DELETE request', async () => {
+        test('Returns error for invalid user DELETE request', async () => {
             const resp = await request(app).delete(`/users/invalid`);
     
-            expect(resp.statusCode).toBe(404);
+            expect(resp.statusCode).toBe(401);
         });
     });
 });
 
 afterEach(async () => {
-    // await db.query('DELETE FROM companies')
-    // await db.query('DELETE FROM jobs')
     await db.query('DELETE FROM users')
 });
 
