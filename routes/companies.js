@@ -2,12 +2,11 @@ const { SSL_OP_NETSCAPE_CA_DN_BUG } = require('constants');
 const express = require('express');
 const ExpressError = require('../helpers/ExpressError');
 const router = express.Router();
-// const { authRequired, adminRequire } = require('../middleware/auth.js');
 const Company = require('../models/company_queries');
 const { validate } = require('jsonschema');
 const updateCompanySchema = require('../schemas/updateCompanySchema')
 const newCompanySchema = require('../schemas/newCompanySchema');
-const { checkAuth } = require('../models/user_queries');
+const { checkAuth, checkAdmin } = require('../middleware/auth');
 
 // get all companies with possible parameters
 router.get('/', async (req, res, next) => {
@@ -20,7 +19,7 @@ router.get('/', async (req, res, next) => {
 });
 
 // create a new company
-router.post('/', async (req, res, next) => {
+router.post('/', checkAdmin, async (req, res, next) => {
     try {
         const validation = validate(req.body, newCompanySchema);
         if (!validation.valid) {
@@ -46,7 +45,7 @@ router.get('/:handle', checkAuth, async (req, res, next) => {
     }
 })
 
-router.patch('/:handle', checkAuth, async (req, res, next) => {
+router.patch('/:handle', checkAdmin, async (req, res, next) => {
     try {
         const validation = validate(req.body, updateCompanySchema);
 
@@ -63,7 +62,7 @@ router.patch('/:handle', checkAuth, async (req, res, next) => {
     }
 })
 
-router.delete('/:handle', async (req, res, next) => {
+router.delete('/:handle', checkAdmin, async (req, res, next) => {
     try {
         const handle = req.params.handle;
         await Company.deleteCompany(handle);

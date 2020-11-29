@@ -5,11 +5,11 @@ const router = express.Router();
 const { validate } = require('jsonschema');
 const newUserSchema = require('../schemas/newUserSchema');
 const updateUserSchema = require('../schemas/updateUserSchema');
-const checkAdmin = require('../middleware/auth');
+const { checkCorrectUser } = require('../middleware/auth');
 const createToken = require('../helpers/createToken');
 
 
-router.post('/', checkAdmin, async (req, res, next) => {
+router.post('/', async (req, res, next) => {
     try {
         const validation = validate(req.body, newUserSchema);
         if (!validation.valid) {
@@ -43,7 +43,7 @@ router.get('/:username', async (req, res, next) => {
 });
 
 
-router.patch('/:username', async (req, res, next) => {
+router.patch('/:username', checkCorrectUser, async (req, res, next) => {
     try {
         const validation = validate(req.body, updateUserSchema);
 
@@ -60,7 +60,7 @@ router.patch('/:username', async (req, res, next) => {
     }
 });
 
-router.delete('/:username', async (req, res, next) => {
+router.delete('/:username', checkCorrectUser, async (req, res, next) => {
     try {
         const response = await User.deleteUser(req.params.username);
         return res.json({ "message": "User deleted" });
