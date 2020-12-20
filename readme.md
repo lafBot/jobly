@@ -18,4 +18,8 @@ createdb jobly
 psql < seed.sql
 ```
 
-## Usage
+## Testing
+I recommend running consecutively:
+```bash
+jest --runInBand
+```

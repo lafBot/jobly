@@ -10,6 +10,9 @@ function checkAuth(req, res, next) {
     try {
         const userToken = req.body._token || req.query._token;
         let token = jwt.verify(userToken, SECRET_KEY);
+        if (!token) {
+            throw new Error();
+        }
         res.locals.username = token.username;
 
         return next();
@@ -30,10 +33,10 @@ function checkAdmin(req, res, next) {
             return next();
         }
         
-        throw new ExpressError('Admin level access required', 401);
-
+        throw new Error();
+        
     } catch(err) {
-        return next(err);
+        return next(new ExpressError('Admin level access required', 401));
     }
 }
 
